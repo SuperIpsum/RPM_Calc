@@ -1,4 +1,4 @@
-const CACHE_NAME = "rpm-coach-v2";
+const CACHE_NAME = "rpm-coach-v3";
 const ASSETS = [
   "./",
   "./index.html",

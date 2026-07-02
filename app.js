@@ -626,11 +626,13 @@ function gearOrdinal(n) {
   return GEAR_ORDINALS[n - 1] || n + "ª";
 }
 
-const REEL_ANGLE = 24; // degrees per row step
-const REEL_RADIUS = 165; // px
+const REEL_ANGLE = 20; // degrees of tilt per step (visual only, never enlarges)
+const REEL_STEP = 60; // px vertical distance per gear step
+const REEL_PUSHBACK = 46; // px pushed away from viewer per step (shrinks, never grows)
 
 function reelRowTransform(offset) {
-  return `rotateX(${-offset * REEL_ANGLE}deg) translateZ(${REEL_RADIUS}px)`;
+  const abs = Math.abs(offset);
+  return `translateY(${offset * REEL_STEP}px) rotateX(${-offset * REEL_ANGLE}deg) translateZ(${-abs * REEL_PUSHBACK}px)`;
 }
 
 function pad3(n) {
