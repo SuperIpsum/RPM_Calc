@@ -5,6 +5,7 @@
 
 const STORAGE_PROFILES = "rpmcoach_profiles";
 const STORAGE_ACTIVE = "rpmcoach_active";
+const STORAGE_ROTATED = "rpmcoach_rotated";
 
 const state = {
   view: "profiles",
@@ -17,7 +18,18 @@ const state = {
   obdConnected: false,
   watchId: null,
   lastFix: null,
+  landscapeRotated: localStorage.getItem(STORAGE_ROTATED) === "1",
 };
+
+function applyRotationClass() {
+  document.body.classList.toggle("force-landscape", state.landscapeRotated);
+}
+
+function toggleRotation() {
+  state.landscapeRotated = !state.landscapeRotated;
+  localStorage.setItem(STORAGE_ROTATED, state.landscapeRotated ? "1" : "0");
+  applyRotationClass();
+}
 
 function loadProfiles() {
   try {
@@ -511,7 +523,10 @@ function renderDashboard() {
       <div class="topbar">
         <button class="icon-btn" id="profilesBtn">☰</button>
         <span class="app-title">RPM Coach</span>
-        <button class="icon-btn" id="gearIconBtn">⚙</button>
+        <div style="display:flex; gap:8px;">
+          <button class="icon-btn ${state.landscapeRotated ? "active" : ""}" id="rotateBtn" title="Rotar a horizontal">⟳</button>
+          <button class="icon-btn" id="gearIconBtn">⚙</button>
+        </div>
       </div>
 
       <div class="speed-pill">
@@ -541,6 +556,10 @@ function renderDashboard() {
 
   document.getElementById("profilesBtn").addEventListener("click", () => go("profiles"));
   document.getElementById("gearIconBtn").addEventListener("click", () => go("settings"));
+  document.getElementById("rotateBtn").addEventListener("click", () => {
+    toggleRotation();
+    document.getElementById("rotateBtn").classList.toggle("active", state.landscapeRotated);
+  });
 
   state.dashboardBuiltFor = profile.id;
   updateDashboardData(profile);
@@ -689,6 +708,7 @@ function escapeAttr(s) {
 
 /* ---------------- Boot ---------------- */
 function boot() {
+  applyRotationClass();
   const active = getActiveProfile();
   if (active) {
     state.view = "dashboard";
