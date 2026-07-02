@@ -79,10 +79,6 @@ function recommendGear(speedKmh, profile) {
     return { gear: idx + 1, rpm, zone: zoneFor(rpm, profile) };
   });
 
-  if (speedKmh < 3) {
-    return { gear: 1, rpm: profile.idleRpm, zone: "blue", options };
-  }
-
   const greens = options.filter((o) => o.zone === "green");
   if (greens.length) {
     const best = greens.reduce((a, b) => (b.gear > a.gear ? b : a));
@@ -141,6 +137,9 @@ function startGPS() {
     },
     (err) => {
       state.speedSourceStatus = "Sin señal GPS (" + err.message + ")";
+      state.speedKmh = 0;
+      state.lastFix = null;
+      pushHistory(0);
       tick();
     },
     { enableHighAccuracy: true, maximumAge: 1000, timeout: 8000 }
@@ -534,16 +533,6 @@ function renderDashboard() {
           <span class="reel-axle left"></span>
           <span class="reel-axle right"></span>
         </div>
-        <div class="gear-caption">
-          <div class="label" id="gearLabel"></div>
-          <div class="rpm" id="gearRpm"></div>
-        </div>
-        <div class="zone-legend">
-          <span><span class="dot blue"></span>Bajo</span>
-          <span><span class="dot green"></span>Ideal</span>
-          <span><span class="dot yellow"></span>Precaución</span>
-          <span><span class="dot red"></span>Riesgo</span>
-        </div>
       </div>
 
       <div class="profile-strip">Perfil activo: <b>${escapeHtml(profile.name)}</b></div>
@@ -601,26 +590,16 @@ function updateDashboardData(profile) {
     lens.classList.remove("zone-blue", "zone-green", "zone-yellow", "zone-red");
     lens.classList.add("zone-" + rec.zone);
   }
-
-  const gearLabel = document.getElementById("gearLabel");
-  const gearRpm = document.getElementById("gearRpm");
-  if (gearLabel) {
-    gearLabel.classList.remove("zone-blue", "zone-green", "zone-yellow", "zone-red");
-    gearLabel.classList.add("zone-" + rec.zone);
-    gearLabel.textContent = `${gearOrdinal(rec.gear)} · ${zoneLabel(rec.zone)}`;
-  }
-  if (gearRpm) gearRpm.textContent = Math.round(rec.rpm) + " rpm";
 }
 
 function tick() {
-  if (state.view === "dashboard") {
-    const profile = getActiveProfile();
-    if (profile && state.dashboardBuiltFor === profile.id) {
-      updateDashboardData(profile);
-      return;
-    }
+  if (state.view !== "dashboard") return;
+  const profile = getActiveProfile();
+  if (profile && state.dashboardBuiltFor === profile.id) {
+    updateDashboardData(profile);
+  } else {
+    render();
   }
-  render();
 }
 
 function tracePoints() {

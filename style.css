@@ -144,6 +144,8 @@ html, body {
   width: 100%;
   max-width: 340px;
   perspective: 950px;
+  border-radius: 28px;
+  overflow: hidden;
 }
 
 .reel-frame-bg {
@@ -184,30 +186,37 @@ html, body {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding: 0 30px;
+  gap: 10px;
+  padding: 0 22px;
   color: var(--zc, var(--ink-dim));
   transition: transform .5s cubic-bezier(.22,.85,.28,1), opacity .5s ease, color .3s ease;
   will-change: transform, opacity;
   backface-visibility: hidden;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .reel-row .g-name {
   font-family: 'Orbitron', sans-serif;
   font-weight: 700;
-  letter-spacing: .02em;
+  letter-spacing: .01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .reel-row .g-rpm {
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;
-  opacity: .88;
+  opacity: .85;
+  font-size: .62em;
+  flex-shrink: 0;
 }
 
 .reel-row[data-offset="0"] {
-  font-size: 26px;
+  font-size: 21px;
   text-shadow: 0 0 22px color-mix(in srgb, var(--zc, var(--zone-green)) 65%, transparent);
 }
-.reel-row[data-offset="1"] { font-size: 18px; }
-.reel-row[data-offset="2"] { font-size: 13px; }
+.reel-row[data-offset="1"] { font-size: 15px; }
+.reel-row[data-offset="2"] { font-size: 11px; }
 
 .reel-lens {
   position: absolute;
